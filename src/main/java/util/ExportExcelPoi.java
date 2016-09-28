@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
@@ -82,38 +83,87 @@ public class ExportExcelPoi {
         comment.setAuthor("这里是设置作者");
 
         // 产生表格标题行
-        HSSFRow row = sheet.createRow(0);
-        HSSFRow row2 = sheet.createRow(1);
-        for(short i = 0, n = 0; i < headers.length; i++){//i是headers的索引，n是Excel的索引
-            HSSFCell cell1 = row.createCell(n);
-            cell1.setCellStyle(style);
-            HSSFRichTextString text = null;
-            if(headers[i].contains(":")){//双标题
-                String[] temp = headers[i].split(":");
-                text = new HSSFRichTextString(temp[0]);
-                String[] tempSec = temp[1].split(",");
-                sheet.addMergedRegion(new Region(0, n, 0, (short) (n + tempSec.length -1)));
-                short tempI = n;
-                for(int j = 0; j < tempSec.length -1; j++){
-                    HSSFCell cellT = row.createCell(++tempI);
-                    cellT.setCellStyle(style);
+        int index = 0;
+        HSSFRow row = sheet.createRow(index);
+        if(null != headers && headers.length>0){
+            String str = StringUtils.join(headers);
+            if(str.contains(":")) {//双标题
+                index++;
+                HSSFRow row2 = sheet.createRow(index);
+                for(short i = 0, n = 0; i < headers.length; i++){//i是headers的索引，n是Excel的索引
+                    HSSFCell cell1 = row.createCell(n);
+                    cell1.setCellStyle(style);
+                    HSSFRichTextString text = null;
+                    if(headers[i].contains(":")){//双标题
+                        String[] temp = headers[i].split(":");
+                        text = new HSSFRichTextString(temp[0]);
+                        String[] tempSec = temp[1].split(",");
+                        sheet.addMergedRegion(new Region(0, n, 0, (short) (n + tempSec.length -1)));
+                        short tempI = n;
+                        for(int j = 0; j < tempSec.length -1; j++){
+                            HSSFCell cellT = row.createCell(++tempI);
+                            cellT.setCellStyle(style);
+                        }
+                        for(int j = 0; j < tempSec.length; j++){
+                            HSSFCell cell2 = row2.createCell(n++);
+                            cell2.setCellStyle(style);
+                            cell2.setCellValue(new HSSFRichTextString(tempSec[j]));
+                        }
+                    }else{//单标题
+                        HSSFCell cell2 = row2.createCell(n);
+                        cell2.setCellStyle(style);
+                        text = new HSSFRichTextString(headers[i]);
+                        sheet.addMergedRegion(new Region(0, n, 1, n));
+                        n++;
+                    }
+                    cell1.setCellValue(text);
                 }
-                for(int j = 0; j < tempSec.length; j++){
-                    HSSFCell cell2 = row2.createCell(n++);
-                    cell2.setCellStyle(style);
-                    cell2.setCellValue(new HSSFRichTextString(tempSec[j]));
+                index++;
+            }else {//单标题
+                for (short i = 0; i < headers.length; i++)
+                {
+                    HSSFCell cell = row.createCell(i);
+                    cell.setCellStyle(style);
+                    HSSFRichTextString text = new HSSFRichTextString(headers[i]);
+                    cell.setCellValue(text);
                 }
-            }else{//单标题
-                HSSFCell cell2 = row2.createCell(n);
-                cell2.setCellStyle(style);
-                text = new HSSFRichTextString(headers[i]);
-                sheet.addMergedRegion(new Region(0, n, 1, n));
-                n++;
+                index++;
             }
-            cell1.setCellValue(text);
         }
+
+//        // 产生表格标题行
+//        HSSFRow row = sheet.createRow(0);
+//        HSSFRow row2 = sheet.createRow(1);
+//        for(short i = 0, n = 0; i < headers.length; i++){//i是headers的索引，n是Excel的索引
+//            HSSFCell cell1 = row.createCell(n);
+//            cell1.setCellStyle(style);
+//            HSSFRichTextString text = null;
+//            if(headers[i].contains(":")){//双标题
+//                String[] temp = headers[i].split(":");
+//                text = new HSSFRichTextString(temp[0]);
+//                String[] tempSec = temp[1].split(",");
+//                sheet.addMergedRegion(new Region(0, n, 0, (short) (n + tempSec.length -1)));
+//                short tempI = n;
+//                for(int j = 0; j < tempSec.length -1; j++){
+//                    HSSFCell cellT = row.createCell(++tempI);
+//                    cellT.setCellStyle(style);
+//                }
+//                for(int j = 0; j < tempSec.length; j++){
+//                    HSSFCell cell2 = row2.createCell(n++);
+//                    cell2.setCellStyle(style);
+//                    cell2.setCellValue(new HSSFRichTextString(tempSec[j]));
+//                }
+//            }else{//单标题
+//                HSSFCell cell2 = row2.createCell(n);
+//                cell2.setCellStyle(style);
+//                text = new HSSFRichTextString(headers[i]);
+//                sheet.addMergedRegion(new Region(0, n, 1, n));
+//                n++;
+//            }
+//            cell1.setCellValue(text);
+//        }
         // 遍历集合数据，产生数据行
-        for (int i = 0, index = 2; i < dataset.size(); i++, index++) {
+        for (int i = 0; i < dataset.size(); i++, index++) {
             row = sheet.createRow(index);
             for (int j = 0; j < ((ArrayList)dataset.get(i)).size(); j++) {
                 HSSFCell cell = row.createCell((short) j);
