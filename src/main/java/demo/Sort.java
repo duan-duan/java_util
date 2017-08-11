@@ -56,7 +56,8 @@ public class Sort {
             while(i<j&&args[j]>=index)
                 j--;
             if(i<j){
-                args[i++] = args[j];            }
+                args[i++] = args[j];
+            }
 
         }
         args[i] = index;
