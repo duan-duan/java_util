@@ -47,12 +47,12 @@ public class MyHashMap<K, V> implements MyMap<K, V>{
         Entry<K,V> entry = table[index];
         //使用位置没有被占用
         if(null == entry){
-            table[index] = new Entry<K, V,null>();
+            table[index] = new Entry(k,v,null);
             //使用位置加1
             useSize++;
         }else if(null != entry){
             //构建链表
-            table[index] = new Entry<K, V,entry>();
+            table[index] = new Entry(k,v,entry);
         }
         return table[index].getValue();
 
@@ -74,7 +74,7 @@ public class MyHashMap<K, V> implements MyMap<K, V>{
     }
 
     private void up2Size(){
-        Entry<K,V>[] newTable = new Entry<[2*defaulLenth];
+        Entry<K,V>[] newTable = new Entry[2*defaulLenth];
         againHash(newTable);
     }
 
@@ -93,9 +93,9 @@ public class MyHashMap<K, V> implements MyMap<K, V>{
         if(entriyList.size()>0){
             useSize = 0;
             defaulLenth = 2*defaulLenth;
-            for (Entry<K,V> entry; entriyList) {
+            for (Entry<K,V> entry:entriyList) {
                 if(entry.next != null){
-                    entry.next != null
+                    entry.next = null;
                 }
                 put(entry.getKey(),entry.getValue());
 
@@ -106,5 +106,27 @@ public class MyHashMap<K, V> implements MyMap<K, V>{
     }
 
     private void foundEntryNext(Entry<K, V> kvEntry, List<Entry<K, V>> entriyList) {
+    }
+
+
+
+    class Entry<K,V> implements MyMap.Entry<K,V> {
+        K k;
+        V v;
+        Entry<K,V> next;
+        public Entry( K k,V v,Entry<K,V> next){
+            this.k = k;
+            this.v = v;
+            this.next = next;
+        }
+        @Override
+        public K getKey() {
+            return k;
+        }
+
+        @Override
+        public V getValue() {
+            return v;
+        }
     }
 }
