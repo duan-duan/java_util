@@ -1,9 +1,9 @@
-package demo;
+package singleton;
 
 /**
  * @author: wangruirui .
  * @date: 2017/7/30.
- * @description: .
+ * @description: . 内部类
  */
 public class Singleton {
 
